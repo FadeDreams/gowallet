@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/fadedreams/gowallet/domain"
 	"github.com/fadedreams/gowallet/service"
 	"net/http"
 )
@@ -23,7 +24,7 @@ func greet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ch *ClientHandlers) getAllClients(w http.ResponseWriter, r *http.Request) {
-	//clients := []Customer{
+	//clients := []Client{
 	//	{"m", "m2", "1"},
 	//	{"n", "n3", "2"},
 	//}
@@ -37,4 +38,28 @@ func (ch *ClientHandlers) getAllClients(w http.ResponseWriter, r *http.Request) 
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(clients)
 	}
+}
+func (ch *ClientHandlers) createClient(w http.ResponseWriter, r *http.Request) {
+	var newClient Client
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&newClient)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	err = ch.service.CreateClient(domain.Client{
+		Name:    newClient.Name,
+		City:    newClient.City,
+		Zipcode: newClient.Zipcode,
+	})
+	if err != nil {
+		http.Error(w, "Error creating client", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprint(w, "Client created successfully")
 }

@@ -1,0 +1,43 @@
+
+version: '3.8'
+
+networks:
+  netdc1:
+    driver: bridge
+
+services:
+
+  #service1:
+    #build:
+      #context: ./service1
+      #dockerfile: Dockerfile
+    #restart: always
+    #ports:
+      #- "8081:8081"
+    #deploy:
+      #mode: replicated
+      #replicas: 1
+    #volumes:
+      #- service1-data:/path/to/service1/data
+    #networks:
+      #- netdc1
+
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: dbwallet
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - netdc1
+
+
+volumes:
+  #service1-data:
+  postgres-data:

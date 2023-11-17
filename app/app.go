@@ -13,11 +13,13 @@ import (
 func Start() {
 
 	router := mux.NewRouter()
-	ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryStub())}
+	//ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryStub())}
+	ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryDb())}
 
 	// define routes
 	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
 	router.HandleFunc("/clients", ch.getAllClients).Methods(http.MethodGet)
+	router.HandleFunc("/clients", ch.createClient).Methods(http.MethodPost)
 
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
