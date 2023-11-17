@@ -2,14 +2,15 @@ package domain
 
 // Import the PostgreSQL driver
 import (
-	"database/sql"
+	//"database/sql"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"log"
-	"time"
+	//"time"
 )
 
 type ClientRepositoryDb struct {
-	client *sql.DB
+	client *sqlx.DB
 }
 
 func (d ClientRepositoryDb) FindAll() ([]Client, error) {
@@ -50,18 +51,18 @@ func (d ClientRepositoryDb) CreateClient(newClient Client) error {
 	return nil
 }
 
-func NewClientRepositoryDb() ClientRepositoryDb {
+func NewClientRepositoryDb(dbClient *sqlx.DB) ClientRepositoryDb {
 	// Update the driver name and connection string for PostgreSQL
 	// Log the connection string
-	log.Println("Connecting to database with connection string:", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
-	client, err := sql.Open("postgres", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
-	if err != nil {
-		panic(err)
-	}
-	// See "Important settings" section.
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
+	//log.Println("Connecting to database with connection string:", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
+	//client, err := sql.Open("postgres", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
+	//if err != nil {
+	//panic(err)
+	//}
+	//// See "Important settings" section.
+	//client.SetConnMaxLifetime(time.Minute * 3)
+	//client.SetMaxOpenConns(10)
+	//client.SetMaxIdleConns(10)
 
-	return ClientRepositoryDb{client}
+	return ClientRepositoryDb{dbClient}
 }
