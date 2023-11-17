@@ -19,3 +19,10 @@ CREATE TABLE IF NOT EXISTS wallets (
     amount NUMERIC(15, 2) NOT NULL
 );
 
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    wallet_id VARCHAR(255) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_type VARCHAR(50) NOT NULL,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

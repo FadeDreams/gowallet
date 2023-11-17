@@ -27,6 +27,9 @@ func Start() {
 	router.HandleFunc("/clients", ch.createClient).Methods(http.MethodPost)
 
 	router.HandleFunc("/wallets", wh.newWallet).Methods(http.MethodPost)
+	router.
+		HandleFunc("/clients/{client_id:[0-9]+}/wallet/{wallet_id:[0-9]+}", wh.MakeTransaction).
+		Methods(http.MethodPost)
 
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
