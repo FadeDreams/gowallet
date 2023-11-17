@@ -5,18 +5,19 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/fadedreams/gowallet/domain"
+	"github.com/fadedreams/gowallet/service"
 )
 
 func Start() {
 
 	router := mux.NewRouter()
+	ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryStub())}
 
 	// define routes
 	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
-	router.HandleFunc("/clients", getAllClients).Methods(http.MethodGet)
-	router.HandleFunc("/clients", createClient).Methods(http.MethodPost)
-
-	router.HandleFunc("/clients/{client_id:[0-9]+}", getClient).Methods(http.MethodGet)
+	router.HandleFunc("/clients", ch.getAllClients).Methods(http.MethodGet)
 
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))

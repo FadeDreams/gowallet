@@ -4,8 +4,13 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/fadedreams/gowallet/service"
 	"net/http"
 )
+
+type ClientHandlers struct {
+	service service.IClientService
+}
 
 type Client struct {
 	Name    string `json:"full_name" xml:"name"`
@@ -17,11 +22,13 @@ func greet(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello World!!")
 }
 
-func getAllClients(w http.ResponseWriter, r *http.Request) {
-	clients := []Client{
-		{"Ashish", "New Delhi", "110075"},
-		{"Rob", "New Delhi", "110075"},
-	}
+func (ch *ClientHandlers) getAllClients(w http.ResponseWriter, r *http.Request) {
+	//clients := []Customer{
+	//	{"m", "m2", "1"},
+	//	{"n", "n3", "2"},
+	//}
+
+	clients, _ := ch.service.GetAllClient()
 
 	if r.Header.Get("Content-Type") == "application/xml" {
 		w.Header().Add("Content-Type", "application/xml")

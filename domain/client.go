@@ -20,5 +20,22 @@ func (c Client) statusAsText() string {
 }
 
 type IClientRepository interface {
-	FindAll(status string) ([]Client, error)
+	FindAll() ([]Client, error)
+}
+
+// ///////////stub/////////////////////
+type ClientRepositoryStub struct {
+	clients []Client
+}
+
+func (s ClientRepositoryStub) FindAll() ([]Client, error) {
+	return s.clients, nil
+}
+
+func NewClientRepositoryStub() ClientRepositoryStub {
+	clients := []Client{
+		{"1", "m", "m2", "1", "2000-01-01", "1"},
+		{"2", "n", "n3", "2", "2000-02-02", "2"},
+	}
+	return ClientRepositoryStub{clients}
 }
