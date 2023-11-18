@@ -10,16 +10,20 @@ import (
 	"github.com/fadedreams/gowallet/domain"
 	"github.com/fadedreams/gowallet/service"
 	"github.com/jmoiron/sqlx"
+	//"gorm.io/driver/postgres"
+	//"gorm.io/gorm"
 )
 
 func Start() {
 
 	router := mux.NewRouter()
 	dbClient := getDbClient()
+	//dbGormClient := getDbGormClient()
 
 	//ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryStub())}
 	ch := ClientHandlers{service.NewClientService(domain.NewClientRepositoryDb(dbClient))}
 	wh := WalletHandlers{service.NewWalletService(domain.NewWalletRepositoryDb(dbClient))}
+	uh := UserHandlers{service.NewUserService(domain.NewUserRepositoryDb(dbClient))}
 
 	// define routes
 	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
@@ -31,6 +35,7 @@ func Start() {
 		HandleFunc("/clients/{client_id:[0-9]+}/wallet/{wallet_id:[0-9]+}", wh.MakeTransaction).
 		Methods(http.MethodPost)
 
+	router.HandleFunc("/users", uh.createUser).Methods(http.MethodPost)
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 
@@ -60,3 +65,16 @@ func getDbClient() *sqlx.DB {
 
 	return client
 }
+
+//func getDbGormClient() *gorm.DB {
+//db, err := gorm.Open(postgres.New(postgres.Config{DSN: "host=localhost user=postgres password=postgres dbname=dbwallet port=5432 sslmode=disable TimeZone=Asia/Shanghai"}), // data source name, refer https://github.com/jackc/pgx PreferSimpleProtocol: true,                                                                                                          // disables implicit prepared statement usage. By default pgx automatically uses the extended protocol
+//&gorm.Config{})
+
+//if err != nil {
+//log.Fatalln("Invalid database url")
+//}
+
+//fmt.Println("Database connection successful.", db)
+//return db
+
+//}
