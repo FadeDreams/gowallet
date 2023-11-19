@@ -1,6 +1,8 @@
 package domain
 
-import ()
+import (
+	"net/http"
+)
 
 type User struct {
 	Id       string `db:"user_id"`
@@ -12,4 +14,6 @@ type User struct {
 
 type IUserRepository interface {
 	SignUp(User) error
+	SignIn(string, string) (string, error)
+	IsAuthorized(http.HandlerFunc) http.HandlerFunc
 }

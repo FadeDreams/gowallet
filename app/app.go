@@ -36,6 +36,11 @@ func Start() {
 		Methods(http.MethodPost)
 
 	router.HandleFunc("/users", uh.createUser).Methods(http.MethodPost)
+	router.HandleFunc("/login", uh.loginUser).Methods(http.MethodPost)
+
+	//router.HandleFunc("/user", IsAuthorized(UserIndex)).Methods("GET")
+	router.HandleFunc("/user", uh.IsAuth(UserIndex)).Methods("GET")
+
 	// starting server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 
