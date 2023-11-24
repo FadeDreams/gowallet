@@ -39,6 +39,7 @@ func (ch *ClientHandlers) getAllClients(w http.ResponseWriter, r *http.Request) 
 		json.NewEncoder(w).Encode(clients)
 	}
 }
+
 func (ch *ClientHandlers) createClient(w http.ResponseWriter, r *http.Request) {
 	var newClient Client
 	decoder := json.NewDecoder(r.Body)

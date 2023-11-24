@@ -35,9 +35,54 @@ func (d ClientRepositoryDb) FindAll() ([]Client, error) {
 	return clients, nil
 }
 
+func (d ClientRepositoryDb) IsClientTableExists() (bool, error) {
+	// Check if the clients table exists in the database
+	var tableExists bool
+	err := d.client.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1
+			FROM   information_schema.tables
+			WHERE  table_name = 'clients'
+		)
+	`).Scan(&tableExists)
+
+	if err != nil {
+		log.Println("Error checking table existence:", err)
+		return false, err
+	}
+
+	return tableExists, nil
+}
+
 func (d ClientRepositoryDb) CreateClient(newClient Client) error {
+	// Check if the table exists
+	tableExists, err := d.IsClientTableExists()
+	if err != nil {
+		log.Println("Error checking table existence:", err)
+		return err
+	}
+
+	if !tableExists {
+		// Create the clients table if it does not exist
+		_, err := d.client.Exec(`
+			CREATE TABLE clients (
+				id SERIAL PRIMARY KEY,
+				name VARCHAR(100),
+				city VARCHAR(100),
+				zipcode VARCHAR(20),
+				status VARCHAR(20)
+			)
+		`)
+		if err != nil {
+			log.Println("Error creating clients table:", err)
+			return err
+		}
+
+		log.Println("Clients table created successfully")
+	}
+
 	// Insert the new client into the clients table
-	_, err := d.client.Exec(`
+	_, err = d.client.Exec(`
 		INSERT INTO clients (name, city, zipcode, status)
 		VALUES ($1, $2, $3, $4)
 	`, newClient.Name, newClient.City, newClient.Zipcode, newClient.Status)

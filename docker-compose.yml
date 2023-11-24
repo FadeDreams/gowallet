@@ -7,20 +7,20 @@ networks:
 
 services:
 
-  #service1:
-    #build:
-      #context: ./service1
-      #dockerfile: Dockerfile
-    #restart: always
-    #ports:
-      #- "8081:8081"
-    #deploy:
-      #mode: replicated
-      #replicas: 1
-    #volumes:
-      #- service1-data:/path/to/service1/data
-    #networks:
-      #- netdc1
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - app1-data:/app1/data
+    networks:
+      - netdc1
 
   postgres:
     image: postgres:14-alpine
@@ -39,5 +39,5 @@ services:
 
 
 volumes:
-  #service1-data:
+  app1-data:
   postgres-data:

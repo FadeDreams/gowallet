@@ -42,7 +42,7 @@ func Start() {
 	router.HandleFunc("/user", uh.IsAuth(UserIndex)).Methods("GET")
 
 	// starting server
-	log.Fatal(http.ListenAndServe("localhost:8000", router))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
 
 }
 
