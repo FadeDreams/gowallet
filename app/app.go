@@ -2,10 +2,12 @@ package app
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"sync"
 	"time"
+
+	"github.com/gorilla/mux"
 
 	"github.com/fadedreams/gowallet/domain"
 	"github.com/fadedreams/gowallet/service"
@@ -55,20 +57,28 @@ func getClient(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, vars["client_id"])
 }
 
-func getDbClient() *sqlx.DB {
-	// Update the driver name and connection string for PostgreSQL
-	// Log the connection string
-	log.Println("getDbClient Connecting to database with connection string:", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
-	client, err := sqlx.Open("postgres", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
-	if err != nil {
-		panic(err)
-	}
-	// See "Important settings" section.
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
+var (
+	dbClient     *sqlx.DB
+	dbClientOnce sync.Once
+)
 
-	return client
+func getDbClient() *sqlx.DB {
+	dbClientOnce.Do(func() {
+		// Update the driver name and connection string for PostgreSQL
+		// Log the connection string
+		log.Println("Connecting to database with connection string:", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
+		client, err := sqlx.Open("postgres", "user=postgres password=postgres dbname=dbwallet sslmode=disable")
+		if err != nil {
+			panic(err)
+		}
+		// See "Important settings" section.
+		client.SetConnMaxLifetime(time.Minute * 3)
+		client.SetMaxOpenConns(10)
+		client.SetMaxIdleConns(10)
+
+		dbClient = client
+	})
+	return dbClient
 }
 
 //func getDbGormClient() *gorm.DB {
