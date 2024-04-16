@@ -7,23 +7,24 @@ networks:
 
 services:
 
-  app1:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "8000:8000"
-    deploy:
-      mode: replicated
-      replicas: 1
-    volumes:
-      - app1-data:/app1/data
-    networks:
-      - netdc1
+  # app1:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "8000:8000"
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #   volumes:
+  #     - app1-data:/app1/data
+  #   networks:
+  #     - netdc1
 
   postgres:
     image: postgres:14-alpine
+    user: postgres
     restart: always
     environment:
       POSTGRES_DB: dbwallet
@@ -36,6 +37,16 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - netdc1
+    command: >
+      sh -c "
+        if [ -z \"\$(ls -A /var/lib/postgresql/data)\" ]; then
+          echo \"Database is empty, initializing...\" &&
+          createdb -U postgres dbwallet &&
+          psql -U postgres -f /docker-entrypoint-initdb.d/init.sql dbwallet;
+        else
+          echo \"Database already exists, skipping initialization.\" &&
+          exec postgres;
+        fi"
 
 
 volumes:
